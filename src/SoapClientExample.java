@@ -97,29 +97,49 @@ public class SoapClientExample {
 
         // SOAP Body
         SOAPBody soapBody = envelope.getBody();
-        SOAPElement soapBodyElem;
-        SOAPElement soapBodyElem1;
 
-        soapBodyElem = soapBody.addChildElement(serviceName, namespace);  // Создаем PGURecordPackage
-        soapBodyElem1 = soapBodyElem.addChildElement("GUID", namespace);
-        soapBodyElem1.addTextNode("00000000-0000-0000-0000-000000000000");
+        SOAPElement PGURecordPackage = soapBody.addChildElement(serviceName, namespace);  // Создаем PGURecordPackage
+        SOAPElement GUIDBody = PGURecordPackage.addChildElement("GUID", namespace);
+        GUIDBody.addTextNode("00000000-0000-0000-0000-000000000000");
 
-        SOAPElement soapBodyElem2 = soapBodyElem.addChildElement("RecordType", namespace);
-        soapBodyElem2.addTextNode("EPGU_SvcList");
+        SOAPElement RecordTypeBody = PGURecordPackage.addChildElement("RecordType", namespace);
+        RecordTypeBody.addTextNode("EPGU_SvcList");
 
-        SOAPElement soapBodyElem3 = soapBodyElem.addChildElement("Record", namespace);
-        String ney = "self";
-        SOAPElement soapBodyElem4 = soapBodyElem3.addChildElement("EPGU_SvcList", namespace);
-        SOAPElement soapBodyElem5 = soapBodyElem4.addChildElement("GUID1");
-        soapBodyElem5.addTextNode("EC672B83-8943-447C-AC4E-8BC5FF3DDD32");
-        SOAPElement soapBodyElem6 = soapBodyElem4.addChildElement("RegNumber");
-        soapBodyElem6.addTextNode("910112О.99.0.БА78АА00000");
-
-
+        SOAPElement xRecord = PGURecordPackage.addChildElement("Record", namespace);
+        SOAPElement xEPGU_SvcList = xRecord.addChildElement("EPGU_SvcList", namespace);
+        //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
+        String[][] SVC_Val = {
+                {"GUID","EC672B83-8943-447C-AC4E-8BC5FF3DDD32"},
+                {"RegNumber","910112О.99.0.БА78АА00000"},
+                {"Pbl_Actual","true"},
+                {"SvcCode","БА78"},
+                {"Name_Code","33.012.0"},
+                {"Name_Name","Предоставление архивных справок и копий архивных документов, связанных с социальной защитой граждан, предусматривающей их пенсионное обеспечение, а также получение льгот и компенсаций в соответствии с законодательстом Российской Федерации и международными обязательствами Российской Федерации"},
+                {"ActvtyDomn_Code","33"},
+                {"ActvtyDomn_Name","Архивное дело"},
+                {"SvcKind_Code","0"},
+                {"SvcKind_Name","Услуга"},
+                {"Belong210FL","false"},
+                {"NcsrlyBelong210FL","false"},
+                {"ApprovedAt","2017-12-14"},
+                {"EffectiveFrom","2019-01-01"},
+                {"EffectiveBefore","2099-01-01"},
+                {"paidcode","2"},
+                {"paidname","государственная (муниципальная) услуга или работа бесплатная"},
+                {"IsRegional","О"},
+                {"IsRegionalName","Общероссийский классификатор"},
+                {"ListKind","all"},
+                {"ListNumber","01"}
+                };
+        for (int i = 0; i < SVC_Val.length; i++) {
+            String localName = SVC_Val[i][0];
+            SOAPElement xGUID = xEPGU_SvcList.addChildElement(localName);
+            xGUID.addTextNode(SVC_Val[i][1]);
+        }
     }
 
     private void printSOAPMessage(SOAPMessage soapResponse) {
-        TransformerFactory transformerFactory;
+        /*TransformerFactory transformerFactory;
         Transformer transformer;
         try {
             // �������� XSLT-����������
@@ -134,7 +154,7 @@ public class SoapClientExample {
             System.out.println();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
 }
