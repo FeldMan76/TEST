@@ -20,10 +20,16 @@ public class SoapClientExample
 
     private  boolean  useXSLT      = true;
 
-    public SoapClientExample()
+    public static void main(String[] args)
     {
-        setSoapParams();
-        callSoapWebService(soapUrl, soapAction);
+        new SoapClientExample();
+        System.exit(0);
+    }
+
+    public SoapClientExample()  //После main
+    {                       //Получает параметры
+        setSoapParams();    // Переходит в setSoapParams()
+        callSoapWebService(soapUrl, soapAction); // Переходит в callSoapWebService
     }
     private void setSoapParams()
     {
@@ -39,6 +45,58 @@ public class SoapClientExample
         //namespace  = "tns"; // Namespace";
         soapAction = namespaceURI + "/" + serviceName;
     }
+    private void callSoapWebService(String destination, String soapAction)
+    {
+        SOAPConnectionFactory soapFactory  = null;
+        SOAPConnection        soapConnect  = null;
+        SOAPMessage           soapRequest  = null;
+        SOAPMessage           soapResponse = null;
+        try {
+            // �������� SOAP Connection
+            soapFactory = SOAPConnectionFactory.newInstance();
+            soapConnect = soapFactory.createConnection();
+
+            // �������� SOAP Message ��� ��������
+            soapRequest  = createSOAPRequest(soapAction);
+            // ��������� SOAP Message
+            soapResponse = soapConnect.call(soapRequest, destination);
+
+            if (!useXSLT) {
+                // ������ SOAP Response
+                System.out.println("Response SOAP Message:");
+                soapResponse.writeTo(System.out);
+                System.out.println();
+            } else
+                printSOAPMessage (soapResponse);
+
+            soapConnect.close();
+        } catch (Exception e) {
+            System.err.println("\nError occurred while sending SOAP Request to Server!\n"
+                    + "Make sure you have the correct endpoint URL and SOAPAction!\n");
+            e.printStackTrace();
+        }
+    }
+
+    private SOAPMessage createSOAPRequest(String soapAction) throws Exception
+    {
+        MessageFactory messageFactory = MessageFactory.newInstance();
+        SOAPMessage soapMessage = messageFactory.createMessage();
+
+        createSoapEnvelope(soapMessage);
+
+        MimeHeaders headers = soapMessage.getMimeHeaders();
+        headers.addHeader("SOAPAction", soapAction);
+
+        soapMessage.saveChanges();
+
+        // ������ XML ������ �������
+        System.out.println("Request SOAP Message:");
+        soapMessage.writeTo(System.out);
+        System.out.println("\n");
+
+        return soapMessage;
+    }
+
     private void createSoapEnvelope(SOAPMessage soapMessage) throws SOAPException
     {
         SOAPPart soapPart = soapMessage.getSOAPPart();
@@ -86,56 +144,7 @@ public class SoapClientExample
             soapBodyElem1.addTextNode("New York");
         }
     }
-    private SOAPMessage createSOAPRequest(String soapAction) throws Exception
-    {
-        MessageFactory messageFactory = MessageFactory.newInstance();
-        SOAPMessage soapMessage = messageFactory.createMessage();
 
-        createSoapEnvelope(soapMessage);
-
-        MimeHeaders headers = soapMessage.getMimeHeaders();
-        headers.addHeader("SOAPAction", soapAction);
-
-        soapMessage.saveChanges();
-
-        // ������ XML ������ �������
-        System.out.println("Request SOAP Message:");
-        soapMessage.writeTo(System.out);
-        System.out.println("\n");
-
-        return soapMessage;
-    }
-    private void callSoapWebService(String destination, String soapAction)
-    {
-        SOAPConnectionFactory soapFactory  = null;
-        SOAPConnection        soapConnect  = null;
-        SOAPMessage           soapRequest  = null;
-        SOAPMessage           soapResponse = null;
-        try {
-            // �������� SOAP Connection
-            soapFactory = SOAPConnectionFactory.newInstance();
-            soapConnect = soapFactory.createConnection();
-
-            // �������� SOAP Message ��� ��������
-            soapRequest  = createSOAPRequest(soapAction);
-            // ��������� SOAP Message
-            soapResponse = soapConnect.call(soapRequest, destination);
-
-            if (!useXSLT) {
-                // ������ SOAP Response
-                System.out.println("Response SOAP Message:");
-                soapResponse.writeTo(System.out);
-                System.out.println();
-            } else
-                printSOAPMessage (soapResponse);
-
-            soapConnect.close();
-        } catch (Exception e) {
-            System.err.println("\nError occurred while sending SOAP Request to Server!\n"
-                    + "Make sure you have the correct endpoint URL and SOAPAction!\n");
-            e.printStackTrace();
-        }
-    }
     private void printSOAPMessage (SOAPMessage soapResponse)
     {
         TransformerFactory transformerFactory;
@@ -155,10 +164,6 @@ public class SoapClientExample
             e.printStackTrace();
         }
     }
-    public static void main(String[] args)
-    {
-        new SoapClientExample();
-        System.exit(0);
-    }
+
 }
 
