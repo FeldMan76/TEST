@@ -107,35 +107,65 @@ public class SoapClientExample {
 
         SOAPElement xRecord = PGURecordPackage.addChildElement("Record", namespace);
         SOAPElement xEPGU_SvcList = xRecord.addChildElement("EPGU_SvcList", namespace);
+        // Вставка основных полей записи
         //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
         String[][] SVC_Val = {
-                {"GUID","EC672B83-8943-447C-AC4E-8BC5FF3DDD32"},
-                {"RegNumber","910112О.99.0.БА78АА00000"},
-                {"Pbl_Actual","true"},
-                {"SvcCode","БА78"},
-                {"Name_Code","33.012.0"},
-                {"Name_Name","Предоставление архивных справок и копий архивных документов, связанных с социальной защитой граждан, предусматривающей их пенсионное обеспечение, а также получение льгот и компенсаций в соответствии с законодательстом Российской Федерации и международными обязательствами Российской Федерации"},
-                {"ActvtyDomn_Code","33"},
-                {"ActvtyDomn_Name","Архивное дело"},
-                {"SvcKind_Code","0"},
-                {"SvcKind_Name","Услуга"},
-                {"Belong210FL","false"},
-                {"NcsrlyBelong210FL","false"},
-                {"ApprovedAt","2017-12-14"},
-                {"EffectiveFrom","2019-01-01"},
-                {"EffectiveBefore","2099-01-01"},
-                {"paidcode","2"},
-                {"paidname","государственная (муниципальная) услуга или работа бесплатная"},
-                {"IsRegional","О"},
-                {"IsRegionalName","Общероссийский классификатор"},
-                {"ListKind","all"},
-                {"ListNumber","01"}
-                };
+                {"GUID", "EC672B83-8943-447C-AC4E-8BC5FF3DDD32"},
+                {"RegNumber", "910112О.99.0.БА78АА00000"},
+                {"Pbl_Actual", "true"},
+                {"SvcCode", "БА78"},
+                {"Name_Code", "33.012.0"},
+                {"Name_Name", "Предоставление архивных справок и копий архивных документов, связанных с социальной защитой граждан, предусматривающей их пенсионное обеспечение, а также получение льгот и компенсаций в соответствии с законодательстом Российской Федерации и международными обязательствами Российской Федерации"},
+                {"ActvtyDomn_Code", "33"},
+                {"ActvtyDomn_Name", "Архивное дело"},
+                {"SvcKind_Code", "0"},
+                {"SvcKind_Name", "Услуга"},
+                {"Belong210FL", "false"},
+                {"NcsrlyBelong210FL", "false"},
+                {"ApprovedAt", "2017-12-14"},
+                {"EffectiveFrom", "2019-01-01"},
+                {"EffectiveBefore", "2099-01-01"},
+                {"paidcode", "2"},
+                {"paidname", "государственная (муниципальная) услуга или работа бесплатная"},
+                {"IsRegional", "О"},
+                {"IsRegionalName", "Общероссийский классификатор"},
+                {"ListKind", "all"},
+                {"ListNumber", "01"}
+        };
         for (int i = 0; i < SVC_Val.length; i++) {
             String localName = SVC_Val[i][0];
-            SOAPElement xGUID = xEPGU_SvcList.addChildElement(localName);
-            xGUID.addTextNode(SVC_Val[i][1]);
+            // Вроде такой код работает (SOAPElement xSVC_Val) посмотрим как дельше будет, в примере все разные были
+            SOAPElement xSVC_Val = xEPGU_SvcList.addChildElement(localName);
+            xSVC_Val.addTextNode(SVC_Val[i][1]);
         }
+        // Вставка таблицы RuClsPrEcAcs
+        SOAPElement xRuClsPrEcAcs = xEPGU_SvcList.addChildElement("RuClsPrEcAcs");
+        //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
+        String[][] RuClsPrEcAcs = {
+                {"91.01.12.000", "Услуги архивов"}};
+        SOAPElement xRuClsPrEcAcs_ITEM = xRuClsPrEcAcs.addChildElement("RuClsPrEcAcs_ITEM");
+        SOAPElement xRuClsPrEcAcs_Code = xRuClsPrEcAcs_ITEM.addChildElement("RuClsPrEcAcs_Code");
+        xRuClsPrEcAcs_Code.addTextNode(RuClsPrEcAcs[0][0]);
+        SOAPElement xRuClsPrEcAcs_Name = xRuClsPrEcAcs_ITEM.addChildElement("RuClsPrEcAcs_Name");
+        xRuClsPrEcAcs_Name.addTextNode(RuClsPrEcAcs[0][1]);
+
+        // Вставка таблицы RuClsEcActs
+
+        // Вставка таблицы PblcEntKnd
+
+        // Вставка таблицы InstnKnd
+
+        // Вставка таблицы CsmCtgy
+
+        // Вставка таблицы VolInd
+
+        // Вставка таблицы LglAct
+
+        // Вставка таблицы SvcBudgInstTypes
+
+        // Вставка даты создания CreateDate
+        SOAPElement xGUID = xEPGU_SvcList.addChildElement("CreateDate");
+        xGUID.addTextNode("2017-12-14");
     }
 
     private void printSOAPMessage(SOAPMessage soapResponse) {
