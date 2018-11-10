@@ -29,7 +29,7 @@ public class SoapClientExample {
     }
 
     private void setSoapParams() {
-
+    // TODO будет 3 системы, сделать в будущем подключение ко всем 3 системам, и лучше бы брать из БД как константы
         namespaceURI = "http://www.roskazna.ru/eb/service/PGU/1.0";
         soapUrl = "http://172.20.18.5:15101/pgu-subscriber-service/pguSubscriberService?WSDL";
         serviceName = "PGURecordPackage";
@@ -50,7 +50,8 @@ public class SoapClientExample {
 
             // �������� SOAP Message ��� ��������
             soapRequest = createSOAPRequest(soapAction);
-            // ��������� SOAP Message
+            // Отправляем SOAP Message
+            // TODO Лучше писать в лог какая запись передана, или сохранять в БД как флаг у записи, что распространена на ...
             soapResponse = soapConnect.call(soapRequest, destination);
 
             if (!useXSLT) {
@@ -100,13 +101,15 @@ public class SoapClientExample {
 
         SOAPElement PGURecordPackage = soapBody.addChildElement(serviceName, namespace);  // Создаем PGURecordPackage
         SOAPElement GUIDBody = PGURecordPackage.addChildElement("GUID", namespace);
-        GUIDBody.addTextNode("00000000-0000-0000-0000-000000000000");
+        GUIDBody.addTextNode("EC672B83-8943-447C-AC4E-8BC5FF3DDD32");
 
         SOAPElement RecordTypeBody = PGURecordPackage.addChildElement("RecordType", namespace);
         RecordTypeBody.addTextNode("EPGU_SvcList");
 
         SOAPElement xRecord = PGURecordPackage.addChildElement("Record", namespace);
         SOAPElement xEPGU_SvcList = xRecord.addChildElement("EPGU_SvcList", namespace);
+        // TODO Задумка с отдельной таблицей по моему не ресурсоэффективно,
+        // TODO в случае с таблицей будет запись в БД, потом извлечение данных, а тут только чтение и формирование SOAP в RAM
         /*
          * !!!! Вставка основных полей записи
          */
@@ -179,7 +182,7 @@ public class SoapClientExample {
         // Вставка таблицы LglAct
         // Вставка таблицы SvcBudgInstTypes
 
-        // TODO Каких то таблиц не хватает... надо узнать каких
+        // TODO Каких то таблиц не хватает... надо узнать каких .. у Лены есть полная структура
 
         // Вставка даты создания CreateDate
         SOAPElement xGUID = xEPGU_SvcList.addChildElement("CreateDate");
