@@ -146,20 +146,33 @@ public class SoapClientExample {
          */
         // Вставка таблицы RuClsPrEcAcs
         //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
+        String[] tRuClsPrEcAcsFields = {"RuClsPrEcAcs_Code", "RuClsPrEcAcs_Name"};
         String[][] tRuClsPrEcAcs = {
-                {"RuClsPrEcAcs_Code", "91.01.12.000"},
-                {"RuClsPrEcAcs_Name", "Услуги архивов"}};
-        SvcListItems("RuClsPrEcAcs", tRuClsPrEcAcs, xEPGU_SvcList);
+                {"91.01.12.000", "Услуги архивов"}
+        };
+        SvcListItems("RuClsPrEcAcs", tRuClsPrEcAcsFields, tRuClsPrEcAcs, xEPGU_SvcList);
+
         // Вставка таблицы RuClsEcActs
         //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
+        String[] tRuClsEcActsFields = {"RuClsEcActs_Code", "RuClsEcActs_Name"};
         String[][] tRuClsEcActs = {
-                {"RuClsEcActs_Code", "91.01"},
-                {"RuClsEcActs_Name", "Деятельность библиотек и архивов"}};
-        SvcListItems("RuClsEcActs", tRuClsEcActs, xEPGU_SvcList);
+                {"91.01", "Деятельность библиотек и архивов"}
+        };
+        SvcListItems("RuClsEcActs", tRuClsEcActsFields, tRuClsEcActs, xEPGU_SvcList);
+
+        // Вставка таблицы PblcEntKnd
+        String[] tPblcEntKndFields = {"PblcEntKnd_Code", "PblcEntKnd_Name"};
+        String[][] tPblcEntKnd = {
+                {"010", "Российская Федерация"},
+                {"021", "субъект Российской Федерации"},
+                {"022", "город федерального значения"},
+                {"030", "Муниципальное образование"}
+        };
+        SvcListItems("PblcEntKnd", tPblcEntKndFields, tPblcEntKnd, xEPGU_SvcList);
+
         /*
             TODO Следующие по аналогии с вышестоящими
          */
-        // Вставка таблицы PblcEntKnd
         // Вставка таблицы InstnKnd
         // Вставка таблицы CsmCtgy
         // Вставка таблицы VolInd
@@ -174,15 +187,23 @@ public class SoapClientExample {
     }
 
     // Заполненеие табличных атрибутов
-    private void SvcListItems(String NameElem, String[][] ItemsVal, SOAPElement xEPGU_SvcList) throws SOAPException {
+    // Передаваемые параметры  :
+    // String NameElem - Наименование подгруппы вложенных элементов
+    // String[] ItemsName - Наименования передаваемых параметров
+    // String[][] ItemsVal - Массив со значениями параметров, количество параметров зависит от ItemsName
+    // SOAPElement xEPGU_SvcList - Наименование группы, куда будем складывать подгруппы
+    private void SvcListItems(String NameElem, String[] ItemsName, String[][] ItemsVal, SOAPElement xEPGU_SvcList) throws SOAPException {
+        // Создаем подгруппу с именем NameElem
         SOAPElement xSvcListChild = xEPGU_SvcList.addChildElement(NameElem);
-        //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
-        SOAPElement xSvcListChild_ITEM = xSvcListChild.addChildElement(NameElem + "_ITEM");
+        // Считаем сколько паредаваемых строк таблицы и идем по ним
         for (int i = 0; i < ItemsVal.length; i++) {
-            //String localName = SVC_Val[i][0];
-            // Вроде такой код работает (SOAPElement xSVC_Val) посмотрим как дельше будет, в примере все разные были
-            SOAPElement xITEMS = xSvcListChild_ITEM.addChildElement(ItemsVal[i][0]);
-            xITEMS.addTextNode(ItemsVal[i][1]);
+            // Создаем подгруппу у NameElem с именем NameElem + "_ITEM"
+            SOAPElement xSvcListChild_ITEM = xSvcListChild.addChildElement(NameElem + "_ITEM");
+            // В зависисмости от количества параметров в ItemsName берем соответствующие значения параметров из строки и пишем в xSvcListChild_ITEM
+            for (int j = 0; j < ItemsName.length; j++) {
+                SOAPElement xITEMS = xSvcListChild_ITEM.addChildElement(ItemsName[j]);
+                xITEMS.addTextNode(ItemsVal[i][j]);
+            }
         }
     }
 
