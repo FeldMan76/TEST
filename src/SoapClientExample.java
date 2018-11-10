@@ -107,11 +107,14 @@ public class SoapClientExample {
 
         SOAPElement xRecord = PGURecordPackage.addChildElement("Record", namespace);
         SOAPElement xEPGU_SvcList = xRecord.addChildElement("EPGU_SvcList", namespace);
-        // Вставка основных полей записи
+        /*
+         * !!!! Вставка основных полей записи
+         */
         //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
-        String[][] SVC_Val = {
+        String[][] tSVC_Val = {
                 {"GUID", "EC672B83-8943-447C-AC4E-8BC5FF3DDD32"},
                 {"RegNumber", "910112О.99.0.БА78АА00000"},
+                {"RegrNumber", "33012000000000000000100"},
                 {"Pbl_Actual", "true"},
                 {"SvcCode", "БА78"},
                 {"Name_Code", "33.012.0"},
@@ -132,41 +135,58 @@ public class SoapClientExample {
                 {"ListKind", "all"},
                 {"ListNumber", "01"}
         };
-        for (int i = 0; i < SVC_Val.length; i++) {
-            String localName = SVC_Val[i][0];
+        for (int i = 0; i < tSVC_Val.length; i++) {
+            //String localName = SVC_Val[i][0];
             // Вроде такой код работает (SOAPElement xSVC_Val) посмотрим как дельше будет, в примере все разные были
-            SOAPElement xSVC_Val = xEPGU_SvcList.addChildElement(localName);
-            xSVC_Val.addTextNode(SVC_Val[i][1]);
+            SOAPElement xSVC_Val = xEPGU_SvcList.addChildElement(tSVC_Val[i][0]);
+            xSVC_Val.addTextNode(tSVC_Val[i][1]);
         }
+        /*
+         * !!!! Вставка табличных полей записи
+         */
         // Вставка таблицы RuClsPrEcAcs
-        SOAPElement xRuClsPrEcAcs = xEPGU_SvcList.addChildElement("RuClsPrEcAcs");
         //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
-        String[][] RuClsPrEcAcs = {
-                {"91.01.12.000", "Услуги архивов"}};
-        SOAPElement xRuClsPrEcAcs_ITEM = xRuClsPrEcAcs.addChildElement("RuClsPrEcAcs_ITEM");
-        SOAPElement xRuClsPrEcAcs_Code = xRuClsPrEcAcs_ITEM.addChildElement("RuClsPrEcAcs_Code");
-        xRuClsPrEcAcs_Code.addTextNode(RuClsPrEcAcs[0][0]);
-        SOAPElement xRuClsPrEcAcs_Name = xRuClsPrEcAcs_ITEM.addChildElement("RuClsPrEcAcs_Name");
-        xRuClsPrEcAcs_Name.addTextNode(RuClsPrEcAcs[0][1]);
-
+        String[][] tRuClsPrEcAcs = {
+                {"RuClsPrEcAcs_Code", "91.01.12.000"},
+                {"RuClsPrEcAcs_Name", "Услуги архивов"}};
+        SvcListItems("RuClsPrEcAcs", tRuClsPrEcAcs, xEPGU_SvcList);
         // Вставка таблицы RuClsEcActs
-
+        //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
+        String[][] tRuClsEcActs = {
+                {"RuClsEcActs_Code", "91.01"},
+                {"RuClsEcActs_Name", "Деятельность библиотек и архивов"}};
+        SvcListItems("RuClsEcActs", tRuClsEcActs, xEPGU_SvcList);
+        /*
+            TODO Следующие по аналогии с вышестоящими
+         */
         // Вставка таблицы PblcEntKnd
-
         // Вставка таблицы InstnKnd
-
         // Вставка таблицы CsmCtgy
-
         // Вставка таблицы VolInd
-
         // Вставка таблицы LglAct
-
         // Вставка таблицы SvcBudgInstTypes
+
+        // TODO Каких то таблиц не хватает... надо узнать каких
 
         // Вставка даты создания CreateDate
         SOAPElement xGUID = xEPGU_SvcList.addChildElement("CreateDate");
         xGUID.addTextNode("2017-12-14");
     }
+
+    // Заполненеие табличных атрибутов
+    private void SvcListItems(String NameElem, String[][] ItemsVal, SOAPElement xEPGU_SvcList) throws SOAPException {
+        SOAPElement xSvcListChild = xEPGU_SvcList.addChildElement(NameElem);
+        //TODO Тут должен быть апрос к БД на получение этих полей, пока строковым массивом реализуем
+        SOAPElement xSvcListChild_ITEM = xSvcListChild.addChildElement(NameElem + "_ITEM");
+        for (int i = 0; i < ItemsVal.length; i++) {
+            //String localName = SVC_Val[i][0];
+            // Вроде такой код работает (SOAPElement xSVC_Val) посмотрим как дельше будет, в примере все разные были
+            SOAPElement xITEMS = xSvcListChild_ITEM.addChildElement(ItemsVal[i][0]);
+            xITEMS.addTextNode(ItemsVal[i][1]);
+        }
+    }
+
+    //TODO Раскоментировать
 
     private void printSOAPMessage(SOAPMessage soapResponse) {
         /*TransformerFactory transformerFactory;
